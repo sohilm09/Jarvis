@@ -1,21 +1,24 @@
 package net.knightsys.jarvis;
 
-import android.media.Image;
+import android.content.Context;
 
 /**
  * Created by root on 11/23/17.
  */
 
 public class Card {
-    static class CardType{
-        static int Salutation = 0;
-        static int Weather = 1;
-    }
     public int Type;
     public String Details;
-    public Image Pic;
-    public Card(int pType)
-    {
+    public String PicUri;
+    public Context context;
+
+    public Card(Context pcontext, int pType) {
+        context = pcontext;
         Type = pType;
+    }
+
+    static class CardType {
+        static int Salutation = 0;
+        static int Weather = 1;
     }
 }
