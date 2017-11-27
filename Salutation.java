@@ -1,6 +1,8 @@
 package net.knightsys.jarvis;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import java.util.Calendar;
 
@@ -10,9 +12,15 @@ import java.util.Calendar;
 
 public class Salutation extends Card {
 
+    private SharedPreferences sharedPref;
+    private Context context;
+
     public Salutation(Context context, int pType) {
         super(context, pType);
-        this.Details = GetSalutation();
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        String name = sharedPref.getString("Name", "Alpha");
+        this.context = context;
+        this.Details = GetSalutation() + " " + name;
     }
 
     private String GetSalutation() {
@@ -21,13 +29,13 @@ public class Salutation extends Card {
         //TODO: Convert to resources
         if (hour < 12) {
             this.PicUri = "goodmorning";
-            return "Good Morning";
+            return context.getString(R.string.goodmorning);
         } else if (hour < 18) {
             this.PicUri = "goodafternoon";
-            return "Good Afternoon";
+            return context.getString(R.string.goodafternoon);
         } else {
             this.PicUri = "goodevening";
-            return "Good Evening";
+            return context.getString(R.string.goodevening);
         }
     }
 }

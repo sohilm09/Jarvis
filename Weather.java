@@ -1,8 +1,10 @@
 package net.knightsys.jarvis;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
@@ -29,33 +31,50 @@ public class Weather extends Card {
     String TAG = "Weather";
     MainActivity context;
     //TODO: Set format for temperature type
-    private String ptempformat = Character.toString((char) 8457);
+    private String ptempformat;
     private data pdata;
     private FusedLocationProviderClient mFusedLocationClient;
     private String units = "imperial";
+    private SharedPreferences sharedPref;
 
     public Weather(MainActivity pcontext, int pType) {
         super(pcontext, CardType.Weather);
         context = pcontext;
         pdata = new data();
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
-        }
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(context, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    // Logic to handle location object
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-                    GetWeather("lat=" + latitude + "&lon=" + longitude + "&units=" + units);
-                } else GetWeather("zip=77027,us&units=" + units);
+        boolean GPS = sharedPref.getBoolean("GPS", true);
+        units = sharedPref.getString("UnitType", "Imperial");
 
+        if (units.equals("Imperial")) ptempformat = Character.toString((char) 8457);
+        else
+            ptempformat = Character.toString((char) 8451);
+
+        if (GPS == true) {
+            mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 123);
             }
-        });
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(context, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        // Logic to handle location object
+                        double latitude = location.getLatitude();
+                        double longitude = location.getLongitude();
+                        GetWeather("lat=" + latitude + "&lon=" + longitude + "&units=" + units);
+                    } else {
+                        String City = sharedPref.getString("City", "Washington");
+                        GetWeather("q=" + City + "&units=" + units);
+                    }
+
+                }
+            });
+        } else {
+            String City = sharedPref.getString("City", "Washington");
+            GetWeather("q=" + City + "&units=" + units);
+        }
 
     }
 
