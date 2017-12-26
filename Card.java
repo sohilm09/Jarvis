@@ -10,6 +10,7 @@ public class Card {
     public int Type;
     public String Details;
     public String PicUri;
+    public String Trailer;
     public Context context;
 
     public Card(Context pcontext, int pType) {

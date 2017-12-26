@@ -95,6 +95,7 @@ public class Weather extends Card {
 
                     Details = pdata.name + " - " + pdata.description + "\r\n" + "Current:" + pdata.temp + ptempformat + " Hi:" + pdata.temp_max + ptempformat + " Low:" + pdata.temp_min + ptempformat;
                     PicUri = context.getString(R.string.openweatherimgurl) + pdata.icon;
+                    Trailer = "powered by OpenWeather";
                     //Glide.with(context).load(context.getString(R.string.openweatherimgurl) + pdata.icon).placeholder(R.drawable.na).into(Pic);
                     context.DataChanged();
 
